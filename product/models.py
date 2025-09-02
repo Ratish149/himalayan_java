@@ -30,6 +30,10 @@ class Product(models.Model):
     image_alt_description = models.CharField(max_length=100)
     size = models.ManyToManyField(ProductSize,blank=True,null=True)
     sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
+    redeem_points = models.PositiveIntegerField(default=0)
+    is_featured = models.BooleanField(default=False)
+    featured_points = models.PositiveIntegerField(default=0)
+    
 
     def __str__(self):
         return self.name

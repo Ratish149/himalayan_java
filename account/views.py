@@ -8,6 +8,7 @@ from .serializers import CustomUserSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 
 
 class CustomUserList(generics.ListCreateAPIView):
@@ -68,8 +69,11 @@ class LoginView(generics.GenericAPIView):
         }
 
         return Response(data, status=status.HTTP_200_OK)
-    
 
-        
+class ProfileView(generics.RetrieveAPIView):
+    serializer_class = CustomUserSerializer
+    permission_classes = [IsAuthenticated]  # ensures only logged-in users can access
 
-
+    def get_object(self):
+        # Returns the currently authenticated user
+        return self.request.user

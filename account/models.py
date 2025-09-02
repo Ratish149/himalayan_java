@@ -9,6 +9,8 @@ class CustomUser(AbstractUser):
     email = models.EmailField(null=True,blank=True)
     phone_number=models.CharField(max_length=15)
     profile_picture=models.FileField(upload_to='profile_pictures',null=True,blank=True)
+    redeem_points = models.PositiveIntegerField(default=0)
+
 
     def __str__(self):
         return self.full_name
