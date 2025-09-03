@@ -3,7 +3,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from django_filters import rest_framework as filters
 from django_filters.rest_framework import DjangoFilterBackend
-
+from rest_framework import filters as rest_filters
 from .models import Product, ProductCategory, SubCategory
 from .serializers import ProductSerializer, ProductCategorySerializer, ProductSmallSerializer, SubCategorySerializer
 
@@ -61,8 +61,9 @@ class ProductFilter(filters.FilterSet):
 class ProductList(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, rest_filters.SearchFilter]
     filterset_class = ProductFilter
+    search_fields = ['name']
 
     def get_serializer_class(self):
         if self.request.method == 'GET':

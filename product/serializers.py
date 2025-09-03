@@ -64,3 +64,5 @@ class ProductSmallSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['id', 'name', 'price', 'image', 'image_alt_description','description']
+
+

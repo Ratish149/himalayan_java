@@ -27,7 +27,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField()
     image = models.FileField(upload_to='product_images',null=True,blank=True)
-    image_alt_description = models.CharField(max_length=100)
+    image_alt_description = models.CharField(max_length=100,null=True,blank=True)
     size = models.ManyToManyField(ProductSize,blank=True)
     sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
     redeem_points = models.PositiveIntegerField(default=0)
