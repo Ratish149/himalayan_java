@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'order',
     'redeem',
     'favorites',
+    'branch',
 ]
 
 MIDDLEWARE = [

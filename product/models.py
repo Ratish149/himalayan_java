@@ -33,6 +33,7 @@ class Product(models.Model):
     redeem_points = models.PositiveIntegerField(default=0)
     is_featured = models.BooleanField(default=False)
     featured_points = models.PositiveIntegerField(default=0)
+    branch=models.ForeignKey('branch.Branch',on_delete=models.CASCADE,null=True,blank=True)
     
 
     def __str__(self):
