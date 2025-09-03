@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django.contrib.staticfiles',  
+   'drf_yasg',
+    'corsheaders',
     'rest_framework',
     'django_filters',
     'account',
@@ -51,6 +53,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -84,6 +87,18 @@ TEMPLATES = [
             ],
         },
     },
+]
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'https://plenty-angola-drag-certain.trycloudflare.com'
+]
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000',
+    'https://plenty-angola-drag-certain.trycloudflare.com'
 ]
 
 WSGI_APPLICATION = 'himalayan_java.wsgi.application'

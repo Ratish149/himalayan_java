@@ -19,8 +19,7 @@ class Order(models.Model):
     user=models.ForeignKey('account.CustomUser', on_delete=models.CASCADE,null=True,blank=True)
     
 
-    def __str__(self):
-        return self.order_number
+
     
 class OrderItem(models.Model):
     order=models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')

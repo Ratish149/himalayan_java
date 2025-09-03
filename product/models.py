@@ -1,5 +1,5 @@
 from django.db import models
-
+from branch.models import Branch
 # Create your models here.
 class ProductCategory(models.Model):
     name = models.CharField(max_length=100)
@@ -28,12 +28,12 @@ class Product(models.Model):
     description = models.TextField()
     image = models.FileField(upload_to='product_images',null=True,blank=True)
     image_alt_description = models.CharField(max_length=100)
-    size = models.ManyToManyField(ProductSize,blank=True,null=True)
+    size = models.ManyToManyField(ProductSize,blank=True)
     sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
     redeem_points = models.PositiveIntegerField(default=0)
     is_featured = models.BooleanField(default=False)
     featured_points = models.PositiveIntegerField(default=0)
-    branch=models.ForeignKey('branch.Branch',on_delete=models.CASCADE,null=True,blank=True)
+    branch=models.ForeignKey(Branch,on_delete=models.CASCADE,null=True,blank=True)
     
 
     def __str__(self):
