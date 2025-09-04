@@ -93,11 +93,11 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
-    'https://playing-registrar-easy-armenia.trycloudflare.com'
+    'https://psychology-br-phi-quantity.trycloudflare.com'
 ]
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
-    'https://playing-registrar-easy-armenia.trycloudflare.com'
+    'https://psychology-br-phi-quantity.trycloudflare.com'
 ]
 
 WSGI_APPLICATION = 'himalayan_java.wsgi.application'
