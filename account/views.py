@@ -77,3 +77,5 @@ class ProfileView(generics.RetrieveAPIView):
     def get_object(self):
         # Returns the currently authenticated user
         return self.request.user
+    
+

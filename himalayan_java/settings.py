@@ -93,11 +93,11 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
-    'https://plenty-angola-drag-certain.trycloudflare.com'
+    'https://playing-registrar-easy-armenia.trycloudflare.com'
 ]
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
-    'https://plenty-angola-drag-certain.trycloudflare.com'
+    'https://playing-registrar-easy-armenia.trycloudflare.com'
 ]
 
 WSGI_APPLICATION = 'himalayan_java.wsgi.application'

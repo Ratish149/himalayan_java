@@ -10,6 +10,7 @@ class CustomUser(AbstractUser):
     phone_number=models.CharField(max_length=15)
     profile_picture=models.FileField(upload_to='profile_pictures',null=True,blank=True)
     redeem_points = models.PositiveIntegerField(default=0)
+    otp = models.IntegerField(null=True,blank=True)
 
 
     def __str__(self):
