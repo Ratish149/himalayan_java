@@ -4,5 +4,5 @@ from .models import Branch
 class BranchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Branch
-        fields = ['id', 'name', 'address', 'latitude', 'longitude']
+        fields = ['id', 'name', 'address', 'latitude', 'longitude', 'created_at', 'updated_at']
         

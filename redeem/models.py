@@ -1,7 +1,6 @@
 from django.db import models
-from django.core.exceptions import ValidationError
 
-# Create your models here.
+
 class Redeem(models.Model):
     redeem_points = models.PositiveIntegerField()
     sub_category = models.ForeignKey('product.SubCategory', on_delete=models.CASCADE)
@@ -13,10 +12,10 @@ class Redeem(models.Model):
 
 
 class UserRedeem(models.Model):
-    """Track individual redemptions/orders"""
-    user = models.ForeignKey('account.CustomUser', on_delete=models.CASCADE,null=True,blank=True)
+    """Tracks individual user redemptions/orders"""
+    user = models.ForeignKey('account.CustomUser', on_delete=models.CASCADE)
     redeem = models.ForeignKey(Redeem, on_delete=models.CASCADE)
-    points_used = models.PositiveIntegerField(null=True, blank=True)  # Points deducted for this redemption
+    points_used = models.PositiveIntegerField(null=True, blank=True)  # Points deducted
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -27,7 +26,6 @@ class UserRedeem(models.Model):
         return f"{self.user.full_name} - {self.redeem} - {self.points_used} points"
 
     def save(self, *args, **kwargs):
-        # Set points_used to redeem item's points if not already set
         if not self.points_used:
             self.points_used = self.redeem.redeem_points
         super().save(*args, **kwargs)

@@ -93,11 +93,11 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
-    'https://psychology-br-phi-quantity.trycloudflare.com'
+    'https://const-clubs-gg-futures.trycloudflare.com'
 ]
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
-    'https://psychology-br-phi-quantity.trycloudflare.com'
+    'https://const-clubs-gg-futures.trycloudflare.com'
 ]
 
 WSGI_APPLICATION = 'himalayan_java.wsgi.application'
@@ -112,6 +112,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
 
 
 # Password validation

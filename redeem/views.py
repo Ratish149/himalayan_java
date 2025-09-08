@@ -1,27 +1,27 @@
-from django.shortcuts import render
-from rest_framework import generics, status
-from rest_framework.response import Response
+from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from .models import UserRedeem, Redeem
-from .serializers import (
-    UserRedeemSerializer, 
-    RedeemSerializer,
-)
 
-# Create your views here.
-class RedeemPointsView(generics.ListCreateAPIView):
+from .models import Redeem, UserRedeem
+from .serializers import RedeemSerializer, UserRedeemSerializer
+
+
+class RedeemPointsView(generics.ListAPIView):
+    """
+    Public endpoint: View available redeem offers.
+    """
     queryset = Redeem.objects.all()
     serializer_class = RedeemSerializer
-    # permission_classes = [IsAuthenticated]  # Fixed typo: was 'permission'
 
 
 class UserRedeemView(generics.ListCreateAPIView):
-    queryset = UserRedeem.objects.all()
+    """
+    Authenticated endpoint: View or create user's redemptions.
+    """
     serializer_class = UserRedeemSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return super().get_queryset().filter(user=self.request.user)
-    
+        return UserRedeem.objects.filter(user=self.request.user)
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
