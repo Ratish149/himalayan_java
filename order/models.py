@@ -12,8 +12,7 @@ class Order(models.Model):
     ORDER_STATUS = (
         ('pending', 'Pending'),
         ('confirmed', 'Confirmed'),
-        ('shipped', 'Shipped'),
-        ('delivered', 'Delivered'),
+        ('completed','Completed'),
         ('cancelled', 'Cancelled'),
     )
     ORDER_TYPE = (

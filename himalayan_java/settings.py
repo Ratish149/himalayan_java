@@ -93,11 +93,11 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
-    'https://const-clubs-gg-futures.trycloudflare.com'
+    'https://prix-faster-elizabeth-antiques.trycloudflare.com'
 ]
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
-    'https://const-clubs-gg-futures.trycloudflare.com'
+    'https://prix-faster-elizabeth-antiques.trycloudflare.com'
 ]
 
 WSGI_APPLICATION = 'himalayan_java.wsgi.application'

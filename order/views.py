@@ -99,3 +99,17 @@ def RecentProductsView(request):
     
     serializer = ProductSerializer(recent_products, many=True)
     return Response(serializer.data)
+
+
+class PastOrdersView(generics.ListAPIView):
+    serializer_class = OrderSerializer
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user).exclude(status__in=['pending', 'confirmed'])
+    
+
+class PresentOrdersView(generics.ListAPIView):
+    serializer_class = OrderSerializer
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user, status__in=['pending', 'confirmed'])
