@@ -1,5 +1,7 @@
 /media/
 .env
-*.sqlite3
 __pycache__/
+
+*.sqlite3
+*.db
 db.sqlite3
