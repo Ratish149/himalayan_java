@@ -91,6 +91,7 @@ class OrderView(generics.ListCreateAPIView):
 class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
+    lookup_field = 'order_number'
     
     def get_queryset(self):
         base_qs = Order.objects.select_related('user', 'branch').prefetch_related(
