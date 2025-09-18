@@ -31,6 +31,17 @@ class OrderView(generics.ListCreateAPIView):
         if self.request.user and getattr(self.request.user, 'is_staff', False):
             return base_qs
         return base_qs.filter(user=self.request.user)
+    
+    def get(self, request, *args, **kwargs):
+        present_orders = self.queryset.filter(order_status__in=['pending', 'confirmed'])
+        past_orders = self.queryset.exclude(order_status__in=['pending', 'confirmed'])
+        present_serializer = OrderSerializer2(present_orders, many=True)
+        past_serializer = OrderSerializer2(past_orders, many=True)
+        return Response({
+            "present_orders": present_serializer.data,
+            "past_orders": past_serializer.data
+        })
+    
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
