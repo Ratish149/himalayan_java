@@ -93,11 +93,11 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
-    'https://involvement-aggregate-scheduled-saint.trycloudflare.com'
+    'https://breeds-idol-myers-pharmaceutical.trycloudflare.com'
 ]
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
-    'https://involvement-aggregate-scheduled-saint.trycloudflare.com'
+    'https://breeds-idol-myers-pharmaceutical.trycloudflare.com'
 ]
 
 WSGI_APPLICATION = 'himalayan_java.wsgi.application'
