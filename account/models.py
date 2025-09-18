@@ -8,6 +8,7 @@ class CustomUser(AbstractUser):
     email = models.EmailField(null=True, blank=True)
     phone_number = models.CharField(max_length=15, unique=True)
     profile_picture = models.FileField(upload_to='profile_pictures', null=True, blank=True)
+    alt_delivery_address = models.TextField(null=True, blank=True)
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
     redeem_points = models.PositiveIntegerField(default=0)
