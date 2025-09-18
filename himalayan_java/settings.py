@@ -93,11 +93,11 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
-    'https://prix-faster-elizabeth-antiques.trycloudflare.com'
+    'https://performer-awarded-ann-warm.trycloudflare.com'
 ]
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
-    'https://prix-faster-elizabeth-antiques.trycloudflare.com'
+    'https://performer-awarded-ann-warm.trycloudflare.com'
 ]
 
 WSGI_APPLICATION = 'himalayan_java.wsgi.application'
@@ -106,13 +106,19 @@ WSGI_APPLICATION = 'himalayan_java.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'db_host.sqlite3',
     }
 }
-
 
 
 # Password validation
@@ -163,8 +169,10 @@ STATIC_ROOT=os.path.join(BASE_DIR,'static/')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-from django.utils.timezone import timedelta
+from datetime import timedelta
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
+    # Accept both "Bearer" and legacy "JWT" prefixes from frontends
+    "AUTH_HEADER_TYPES": ("Bearer", "JWT"),
 }

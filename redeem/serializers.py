@@ -3,14 +3,17 @@ from django.db import transaction
 from rest_framework.exceptions import ValidationError
 
 from .models import Redeem, UserRedeem
+from rest_framework import serializers as drf_serializers
 
 
 class RedeemSerializer(serializers.ModelSerializer):
     sub_category_name = serializers.CharField(source='sub_category.name', read_only=True)
+    category_id = serializers.IntegerField(source='sub_category.category.id', read_only=True)
+    category_name = serializers.CharField(source='sub_category.category.name', read_only=True)
 
     class Meta:
         model = Redeem
-        fields = ['id', 'redeem_points', 'sub_category', 'sub_category_name', 'created_at', 'updated_at']
+        fields = ['id', 'redeem_points', 'sub_category', 'sub_category_name', 'category_id', 'category_name', 'created_at', 'updated_at']
 
 
 class UserRedeemSerializer(serializers.ModelSerializer):
@@ -34,3 +37,14 @@ class UserRedeemSerializer(serializers.ModelSerializer):
             user.save()
 
         return user_redeem
+
+
+class UserRedeemReadSerializer(serializers.ModelSerializer):
+    """Read-only serializer with nested redeem and category info."""
+    redeem = RedeemSerializer(read_only=True)
+    user_full_name = serializers.CharField(source='user.full_name', read_only=True)
+    user_email = serializers.EmailField(source='user.email', read_only=True)
+
+    class Meta:
+        model = UserRedeem
+        fields = ['id', 'redeem', 'points_used', 'user_full_name', 'user_email', 'created_at', 'updated_at']
