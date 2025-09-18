@@ -22,7 +22,7 @@ class Order(models.Model):
 
     order_number = models.CharField(max_length=50, unique=True, null=True, blank=True)
     order_status = models.CharField(max_length=50, choices=ORDER_STATUS, default='pending')
-    order_type = models.CharField(max_length=50, choices=ORDER_TYPE, default='dine-in')
+    order_type = models.CharField(max_length=50, choices=ORDER_TYPE, default='dine-in', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
