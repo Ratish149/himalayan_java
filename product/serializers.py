@@ -30,7 +30,7 @@ class ProductAddOnsSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     size = ProductSizeSerializer(many=True, required=False)
     add_ons = ProductAddOnsSerializer(many=True, required=False)
-    sub_category = SubCategorySerializer(read_only=True)  # Add this line
+    
     
     class Meta:
         model = Product
@@ -42,13 +42,10 @@ class ProductSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         size_data = validated_data.pop('size', [])
         add_ons_data = validated_data.pop('add_ons', [])
-        sub_category_data = validated_data.pop('sub_category', None)
-
-        # Get the sub_category object
-        sub_category_obj = SubCategory.objects.get(pk=sub_category_data.id if hasattr(sub_category_data, 'id') else sub_category_data)
+        subcategory_obj = validated_data.pop('sub_category')
 
         # Create product
-        product = Product.objects.create(sub_category=sub_category_obj, **validated_data)
+        product = Product.objects.create(sub_category=subcategory_obj, **validated_data)
 
         # Reuse or create size objects
         for size in size_data:
