@@ -28,20 +28,20 @@ class ProductAddOnsSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    size = ProductSizeSerializer(many=True,required=False)
-    add_ons = ProductAddOnsSerializer(many=True,required=False)
-
+    size = ProductSizeSerializer(many=True, required=False)
+    add_ons = ProductAddOnsSerializer(many=True, required=False)
+    sub_category = SubCategorySerializer(read_only=True)  # Add this line
+    
     class Meta:
         model = Product
         fields = [
-            'id','name', 'price', 'description', 'image',
+            'id', 'name', 'price', 'description', 'image',
             'image_alt_description', 'size', 'add_ons', 'sub_category'
         ]
-
+    
     def create(self, validated_data):
         size_data = validated_data.pop('size', [])
         add_ons_data = validated_data.pop('add_ons', [])
-
         subcategory_obj = validated_data.pop('sub_category')
 
         # Create product
@@ -59,10 +59,9 @@ class ProductSerializer(serializers.ModelSerializer):
 
         return product
 
-
 class ProductSmallSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'name', 'price', 'image', 'image_alt_description','description']
+        fields = ['id', 'name', 'price', 'image', 'image_alt_description','description','sub_category']
 
 

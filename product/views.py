@@ -45,7 +45,7 @@ class SubCategoryList(generics.ListCreateAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-class SubProductCategoryDetaik(generics.RetrieveUpdateDestroyAPIView):
+class SubProductCategoryDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = SubCategory.objects.all()
     serializer_class = SubCategorySerializer
 
