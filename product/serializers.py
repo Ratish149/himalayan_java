@@ -42,7 +42,7 @@ class ProductSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         size_data = validated_data.pop('size', [])
         add_ons_data = validated_data.pop('add_ons', [])
-        subcategory_obj = validated_data.pop('sub_category')
+        
 
         # Create product
         product = Product.objects.create(sub_category=subcategory_obj, **validated_data)
