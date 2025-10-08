@@ -1,8 +1,18 @@
 from rest_framework import serializers
+
 from .models import Branch
+
 
 class BranchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Branch
-        fields = ['id', 'name', 'address', 'latitude', 'longitude', 'created_at', 'updated_at']
-        
+        fields = [
+            "id",
+            "name",
+            "address",
+            "latitude",
+            "longitude",
+            "operating_hours",
+            "created_at",
+            "updated_at",
+        ]
