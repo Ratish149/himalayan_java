@@ -32,6 +32,7 @@ class Product(models.Model):
     size = models.ManyToManyField(ProductSize,blank=True)
     sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
     redeem_points = models.PositiveIntegerField(default=0)
+    branch= models.ForeignKey(Branch, on_delete=models.CASCADE, null=True, blank=True)
     is_featured = models.BooleanField(default=False)
     featured_points = models.PositiveIntegerField(default=0)
     

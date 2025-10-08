@@ -4,6 +4,7 @@ from account.models import CustomUser
 
 class Favorite(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    branch = models.ForeignKey('branch.Branch', on_delete=models.CASCADE, null=True, blank=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
