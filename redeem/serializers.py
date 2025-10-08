@@ -48,3 +48,10 @@ class UserRedeemReadSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserRedeem
         fields = ['id', 'redeem', 'points_used', 'user_full_name', 'user_email', 'created_at', 'updated_at']
+
+class UserRedeemPointsSerializer(drf_serializers.Serializer):
+    total_points = drf_serializers.IntegerField()
+    redeemed_points = drf_serializers.IntegerField()
+    available_points = drf_serializers.IntegerField()   
+
+    

@@ -1,9 +1,15 @@
+from django.db.models import Sum
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import NotAuthenticated
 
 from .models import Redeem, UserRedeem
-from .serializers import RedeemSerializer, UserRedeemSerializer, UserRedeemReadSerializer
+from .serializers import (
+    RedeemSerializer,
+    UserRedeemSerializer,
+    UserRedeemReadSerializer,
+    UserRedeemPointsSerializer,
+)
 
 
 class RedeemPointsView(generics.ListAPIView):
@@ -19,24 +25,53 @@ class UserRedeemView(generics.ListCreateAPIView):
     Authenticated endpoint: View or create user's redemptions.
     """
     serializer_class = UserRedeemSerializer
-    # Remove token requirement for this view; enforce auth only when necessary
-    permission_classes = []
+    permission_classes = []  # Public GET, Auth required for POST
 
     def get_queryset(self):
-        base_qs = UserRedeem.objects.select_related('user', 'redeem__sub_category__category')
-        # If unauthenticated, return empty queryset to avoid leaking user data
-        if not self.request.user or not self.request.user.is_authenticated:
+        base_qs = UserRedeem.objects.select_related(
+            'user', 'redeem__sub_category__category'
+        )
+
+        user = self.request.user
+        if not user or not user.is_authenticated:
+            # Prevent unauthorized access
             return base_qs.none()
-        if getattr(self.request.user, 'is_staff', False):
-            return base_qs
-        return base_qs.filter(user=self.request.user)
+
+        if user.is_staff:
+            return base_qs  # Admin can view all
+        return base_qs.filter(user=user)
 
     def perform_create(self, serializer):
-        if not self.request.user or not self.request.user.is_authenticated:
+        user = self.request.user
+        if not user or not user.is_authenticated:
             raise NotAuthenticated("Authentication required to redeem points.")
-        serializer.save(user=self.request.user)
+        serializer.save(user=user)
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return UserRedeemReadSerializer
         return UserRedeemSerializer
+
+
+class UserRedeemPointsView(generics.RetrieveAPIView):
+    """
+    Authenticated endpoint: View user's redeem points summary.
+    """
+    serializer_class = UserRedeemPointsSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        user = self.request.user
+        total_points = getattr(user, 'redeem_points', 0)  # Safe fallback
+        redeemed_points = (
+            UserRedeem.objects.filter(user=user)
+            .aggregate(total=Sum('points_used'))
+            .get('total') or 0
+        )
+        available_points = total_points - redeemed_points
+
+        return {
+            'total_points': total_points,
+            'redeemed_points': redeemed_points,
+            'available_points': available_points,
+        }
