@@ -8,6 +8,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import CustomUser
 from .serializers import (
+    AdminLoginSerializer,
+    AdminRegisterSerializer,
     CustomUserSerializer,
     LoginSerializer,
     UserProfileSerializer,
@@ -108,9 +110,88 @@ class VerifyOTPView(generics.GenericAPIView):
         return Response({"error": "Invalid OTP"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ProfileView(generics.RetrieveAPIView):
+class ProfileView(generics.GenericAPIView):
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_object(self):
-        return self.request.user
+    def get(self, request):
+        user = request.user
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)
+
+
+# Admin Login with Email and password
+
+
+class CreateAdminView(generics.CreateAPIView):
+    serializer_class = AdminRegisterSerializer
+
+    def create(self, request, *args, **kwargs):
+        email = request.data.get("email")
+        password = request.data.get("password")
+        phone_number = request.data.get("phone_number")
+        full_name = request.data.get("full_name", "")
+
+        # Check if user with this phone number already exists
+        if CustomUser.objects.filter(phone_number=phone_number).exists():
+            return Response(
+                {"error": "User with this phone number already exists."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Create the admin user with proper password hashing
+        user = CustomUser.objects.create_user(
+            username=phone_number,  # Required for AbstractUser
+            email=email,
+            password=password,
+            phone_number=phone_number,
+            full_name=full_name,
+            role="admin",
+        )
+
+        # Convert to dict for JSON response (remove password)
+        user_data = {
+            "id": user.id,
+            "full_name": user.full_name,
+            "email": user.email,
+            "phone_number": user.phone_number,
+            "role": user.role,
+            "created_at": user.created_at,
+            "updated_at": user.updated_at,
+        }
+
+        return Response(user_data, status=status.HTTP_201_CREATED)
+
+
+class AdminLoginView(generics.GenericAPIView):
+    serializer_class = AdminLoginSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data["email"]
+        password = serializer.validated_data["password"]
+        user = CustomUser.objects.filter(email=email).first()
+        if not user:
+            return Response(
+                {"error": "User with this email does not exist."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if not user.check_password(password):
+            return Response(
+                {"error": "Invalid password."}, status=status.HTTP_400_BAD_REQUEST
+            )
+        refresh = RefreshToken.for_user(user)
+        refresh["full_name"] = user.full_name
+        refresh["email"] = user.email
+        refresh["phone_number"] = user.phone_number
+        refresh["profile_picture"] = (
+            user.profile_picture.url if user.profile_picture else None
+        )
+        return Response(
+            {
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            },
+            status=status.HTTP_200_OK,
+        )

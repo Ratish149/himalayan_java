@@ -7,4 +7,6 @@ urlpatterns = [
     path("login/", views.LoginView.as_view(), name="login"),
     path("profile/", views.ProfileView.as_view(), name="profile"),
     path("verify-otp/", views.VerifyOTPView.as_view(), name="verify-otp"),
+    path("create-admin/", views.CreateAdminView.as_view(), name="create-admin"),
+    path("admin-login/", views.AdminLoginView.as_view(), name="admin-login"),
 ]

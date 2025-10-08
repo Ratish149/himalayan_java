@@ -1,36 +1,28 @@
-from rest_framework import generics, status
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, BasePermission
-from rest_framework.decorators import api_view, permission_classes
 from django_filters import rest_framework as filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters as rest_filters
+from rest_framework import generics, status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
-from .models import Order, OrderItem
-from .serializers import OrderSerializer, OrderSerializer2, OrderItemSerializer
 from product.models import Product
 from product.serializers import ProductSerializer
 
-
-# -----------------------
-# Custom Role Permissions
-# -----------------------
-class IsSuperAdmin(BasePermission):
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and getattr(request.user, "role", None) == "superadmin"
-
-
-class IsBranchAdmin(BasePermission):
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and getattr(request.user, "role", None) == "admin"
+from .models import Order
+from .serializers import OrderSerializer, OrderSerializer2
 
 
 # -----------------------
 # Filters
 # -----------------------
 class OrderFilter(filters.FilterSet):
-    category = filters.CharFilter(field_name="items__product__sub_category__category__id", lookup_expr="exact")
-    sub_category = filters.CharFilter(field_name="items__product__sub_category__id", lookup_expr="exact")
+    category = filters.CharFilter(
+        field_name="items__product__sub_category__category__id", lookup_expr="exact"
+    )
+    sub_category = filters.CharFilter(
+        field_name="items__product__sub_category__id", lookup_expr="exact"
+    )
 
     class Meta:
         model = Order
@@ -48,9 +40,8 @@ class OrderView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        base_qs = (
-            Order.objects.select_related("user", "branch")
-            .prefetch_related("items", "items__product", "items__product__sub_category__category")
+        base_qs = Order.objects.select_related("user", "branch").prefetch_related(
+            "items", "items__product", "items__product__sub_category__category"
         )
 
         # Role-based access
@@ -68,10 +59,12 @@ class OrderView(generics.ListCreateAPIView):
 
         present_serializer = OrderSerializer2(present_orders, many=True)
         past_serializer = OrderSerializer2(past_orders, many=True)
-        return Response({
-            "present_orders": present_serializer.data,
-            "past_orders": past_serializer.data
-        })
+        return Response(
+            {
+                "present_orders": present_serializer.data,
+                "past_orders": past_serializer.data,
+            }
+        )
 
     def get_serializer_class(self):
         if self.request.method == "GET":
@@ -79,9 +72,11 @@ class OrderView(generics.ListCreateAPIView):
         return OrderSerializer
 
     def create(self, request, *args, **kwargs):
-        print(f"Creating order for user: {request.user.full_name}")
-
         points_to_redeem = int(request.data.get("points_to_redeem", 0))
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        order = serializer.save()
 
         if points_to_redeem > 0:
             if request.user.redeem_points < points_to_redeem:
@@ -89,17 +84,8 @@ class OrderView(generics.ListCreateAPIView):
                     {"error": "Not enough redeem points"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        order = serializer.save()
-
-        if points_to_redeem > 0:
             request.user.redeem_points -= points_to_redeem
             request.user.save()
-
-            order.total_price = max(order.total_price - points_to_redeem, 0)
-            order.discount = points_to_redeem
             order.save()
 
         headers = self.get_success_headers(serializer.data)
@@ -115,20 +101,6 @@ class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     lookup_field = "order_number"
 
-    def get_queryset(self):
-        user = self.request.user
-        base_qs = (
-            Order.objects.select_related("user", "branch")
-            .prefetch_related("items", "items__product", "items__product__sub_category__category")
-        )
-
-        if getattr(user, "role", None) == "superadmin":
-            return base_qs
-        elif getattr(user, "role", None) == "admin":
-            return base_qs.filter(branch=user.branch)
-        else:
-            return base_qs.filter(user=user)
-
     def get_serializer_class(self):
         if self.request.method == "GET":
             return OrderSerializer2
@@ -137,51 +109,19 @@ class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
-def RecentProductsView(request):
+def RecentOrdersView(request):
+    # Get recent orders for the user (last 20 orders for better coverage)
+    recent_orders = Order.objects.filter(user=request.user).order_by("-created_at")[:20]
+
+    # Get products from these orders, ordered by the most recent order date
     recent_products = (
-        Product.objects.filter(orderitem__order__user=request.user)
+        Product.objects.filter(orderitem__order__in=recent_orders)
         .distinct()
-        .order_by("-orderitem__order__created_at")[:5]
+        .order_by(
+            # Order by the most recent order that contains each product
+            "-orderitem__order__created_at"
+        )[:5]
     )
+
     serializer = ProductSerializer(recent_products, many=True)
     return Response(serializer.data)
-
-
-class PastOrdersView(generics.ListAPIView):
-    serializer_class = OrderSerializer2
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        user = self.request.user
-        base_qs = (
-            Order.objects.select_related("user", "branch")
-            .prefetch_related("items", "items__product", "items__product__sub_category__category")
-            .exclude(order_status__in=["pending", "confirmed"])
-        )
-
-        if getattr(user, "role", None) == "superadmin":
-            return base_qs
-        elif getattr(user, "role", None) == "admin":
-            return base_qs.filter(branch=user.branch)
-        else:
-            return base_qs.filter(user=user)
-
-
-class PresentOrdersView(generics.ListAPIView):
-    serializer_class = OrderSerializer2
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        user = self.request.user
-        base_qs = (
-            Order.objects.select_related("user", "branch")
-            .prefetch_related("items", "items__product", "items__product__sub_category__category")
-            .filter(order_status__in=["pending", "confirmed"])
-        )
-
-        if getattr(user, "role", None) == "superadmin":
-            return base_qs
-        elif getattr(user, "role", None) == "admin":
-            return base_qs.filter(branch=user.branch)
-        else:
-            return base_qs.filter(user=user)

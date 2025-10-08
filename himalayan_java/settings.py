@@ -91,11 +91,11 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "https://horse-investigate-indicators-remember.trycloudflare.com",
+    "https://performance-assuming-duncan-feel.trycloudflare.com",
 ]
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
-    "https://horse-investigate-indicators-remember.trycloudflare.com",
+    "https://performance-assuming-duncan-feel.trycloudflare.com",
 ]
 
 WSGI_APPLICATION = "himalayan_java.wsgi.application"

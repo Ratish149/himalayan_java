@@ -1,14 +1,14 @@
 from django.db.models import Sum
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import NotAuthenticated
+from rest_framework.permissions import IsAuthenticated
 
 from .models import Redeem, UserRedeem
 from .serializers import (
     RedeemSerializer,
-    UserRedeemSerializer,
-    UserRedeemReadSerializer,
     UserRedeemPointsSerializer,
+    UserRedeemReadSerializer,
+    UserRedeemSerializer,
 )
 
 
@@ -16,7 +16,8 @@ class RedeemPointsView(generics.ListAPIView):
     """
     Public endpoint: View available redeem offers.
     """
-    queryset = Redeem.objects.select_related('sub_category__category').all()
+
+    queryset = Redeem.objects.select_related("sub_category__category").all()
     serializer_class = RedeemSerializer
 
 
@@ -24,12 +25,12 @@ class UserRedeemView(generics.ListCreateAPIView):
     """
     Authenticated endpoint: View or create user's redemptions.
     """
+
     serializer_class = UserRedeemSerializer
-    permission_classes = []  # Public GET, Auth required for POST
 
     def get_queryset(self):
         base_qs = UserRedeem.objects.select_related(
-            'user', 'redeem__sub_category__category'
+            "user", "redeem__sub_category__category"
         )
 
         user = self.request.user
@@ -48,7 +49,7 @@ class UserRedeemView(generics.ListCreateAPIView):
         serializer.save(user=user)
 
     def get_serializer_class(self):
-        if self.request.method == 'GET':
+        if self.request.method == "GET":
             return UserRedeemReadSerializer
         return UserRedeemSerializer
 
@@ -57,21 +58,23 @@ class UserRedeemPointsView(generics.RetrieveAPIView):
     """
     Authenticated endpoint: View user's redeem points summary.
     """
+
     serializer_class = UserRedeemPointsSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
         user = self.request.user
-        total_points = getattr(user, 'redeem_points', 0)  # Safe fallback
+        total_points = getattr(user, "redeem_points", 0)  # Safe fallback
         redeemed_points = (
             UserRedeem.objects.filter(user=user)
-            .aggregate(total=Sum('points_used'))
-            .get('total') or 0
+            .aggregate(total=Sum("points_used"))
+            .get("total")
+            or 0
         )
         available_points = total_points - redeemed_points
 
         return {
-            'total_points': total_points,
-            'redeemed_points': redeemed_points,
-            'available_points': available_points,
+            "total_points": total_points,
+            "redeemed_points": redeemed_points,
+            "available_points": available_points,
         }

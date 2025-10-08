@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from branch.models import Branch
+
 from .models import CustomUser
 
 
@@ -53,6 +55,19 @@ class CustomUserSerializer2(serializers.ModelSerializer):
 
 class LoginSerializer(serializers.Serializer):
     phone_number = serializers.CharField()
+
+
+class AdminRegisterSerializer(serializers.Serializer):
+    full_name = serializers.CharField(max_length=100)
+    email = serializers.EmailField()
+    phone_number = serializers.CharField(max_length=15)
+    password = serializers.CharField(write_only=True)
+    branch = serializers.PrimaryKeyRelatedField(queryset=Branch.objects.all())
+
+
+class AdminLoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
 
 
 class VerifyOTPSerializer(serializers.Serializer):
