@@ -9,4 +9,5 @@ urlpatterns = [
     path("verify-otp/", views.VerifyOTPView.as_view(), name="verify-otp"),
     path("create-admin/", views.CreateAdminView.as_view(), name="create-admin"),
     path("admin-login/", views.AdminLoginView.as_view(), name="admin-login"),
+    path("users/", views.UserListApiView.as_view(), name="list-users"),
 ]

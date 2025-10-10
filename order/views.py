@@ -47,7 +47,10 @@ class OrderView(generics.ListCreateAPIView):
         # Role-based access
         if getattr(user, "role", None) == "superadmin":
             return base_qs
-        elif getattr(user, "role", None) == "admin":
+        elif (
+            getattr(user, "role", None) == "admin"
+            or getattr(user, "role", None) == "staff"
+        ):
             return base_qs.filter(branch=user.branch)
         else:
             return base_qs.filter(user=user)

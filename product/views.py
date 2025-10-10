@@ -71,7 +71,6 @@ class ProductFilter(filters.FilterSet):
 
 
 class ProductList(generics.ListCreateAPIView):
-    queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend, rest_filters.SearchFilter]
     filterset_class = ProductFilter
@@ -82,12 +81,40 @@ class ProductList(generics.ListCreateAPIView):
             return ProductSmallSerializer
         return ProductSerializer
 
+    def get_queryset(self):
+        user = self.request.user
+        if hasattr(user, "role") and hasattr(user, "branch") and user.role == "admin":
+            return Product.objects.filter(branch=user.branch)
+        return Product.objects.all()
+
     def create(self, request, *args, **kwargs):
+        user = self.request.user
+        if hasattr(user, "role") and hasattr(user, "branch") and user.role == "admin":
+            request.data["branch"] = user.branch.id
         serializer = ProductSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class BranchSpecificProductListView(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSmallSerializer
+
+    def get_queryset(self):
+        queryset = Product.objects.all()
+        branch_id = self.request.query_params.get("branch")
+
+        if branch_id:
+            # Filter by branch ID from query parameter
+            queryset = queryset.filter(branch_id=branch_id)
+        elif hasattr(self.request.user, "branch") and self.request.user.branch:
+            # Filter by user's branch if no query parameter provided
+            queryset = queryset.filter(branch=self.request.user.branch)
+        else:
+            # No branch specified and user has no branch, return empty queryset
+            return Product.objects.none()
 
 
 class ProductDetail(generics.RetrieveUpdateDestroyAPIView):

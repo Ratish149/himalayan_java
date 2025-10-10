@@ -63,6 +63,7 @@ class AdminRegisterSerializer(serializers.Serializer):
     phone_number = serializers.CharField(max_length=15)
     password = serializers.CharField(write_only=True)
     branch = serializers.PrimaryKeyRelatedField(queryset=Branch.objects.all())
+    role = serializers.CharField(max_length=15, required=False)
 
 
 class AdminLoginSerializer(serializers.Serializer):

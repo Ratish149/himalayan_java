@@ -131,6 +131,7 @@ class CreateAdminView(generics.CreateAPIView):
         password = request.data.get("password")
         phone_number = request.data.get("phone_number")
         full_name = request.data.get("full_name", "")
+        role = request.data.get("role", "")
 
         # Check if user with this phone number already exists
         if CustomUser.objects.filter(phone_number=phone_number).exists():
@@ -146,7 +147,7 @@ class CreateAdminView(generics.CreateAPIView):
             password=password,
             phone_number=phone_number,
             full_name=full_name,
-            role="admin",
+            role=role,
         )
 
         # Convert to dict for JSON response (remove password)
@@ -195,3 +196,21 @@ class AdminLoginView(generics.GenericAPIView):
             },
             status=status.HTTP_200_OK,
         )
+
+
+class UserListApiView(generics.ListAPIView):
+    serializer_class = CustomUserSerializer
+    queryset = CustomUser.objects.all()
+
+    def get_queryset(self, *args, **kwargs):
+        user = self.request.user
+
+        if hasattr(user, "role") and user.role in ["admin"]:
+            return CustomUser.objects.filter(
+                branch=user.branch, role__in=["admin", "staff"]
+            )
+        elif hasattr(user, "role") and user.role == "superadmin":
+            return CustomUser.objects.all()
+
+        else:
+            return CustomUser.objects.none()

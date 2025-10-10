@@ -1,4 +1,3 @@
-from django.db.models import Sum
 from rest_framework import generics
 from rest_framework.exceptions import NotAuthenticated
 from rest_framework.permissions import IsAuthenticated
@@ -54,9 +53,10 @@ class UserRedeemView(generics.ListCreateAPIView):
         return UserRedeemSerializer
 
 
-class UserRedeemPointsView(generics.RetrieveAPIView):
+class UserRedeemNextOfferView(generics.RetrieveAPIView):
     """
-    Authenticated endpoint: View user's redeem points summary.
+    Authenticated endpoint: View user's redeem points summary with next coming offer.
+    Returns the next offer that requires more points than the user currently has.
     """
 
     serializer_class = UserRedeemPointsSerializer
@@ -64,17 +64,18 @@ class UserRedeemPointsView(generics.RetrieveAPIView):
 
     def get_object(self):
         user = self.request.user
-        total_points = getattr(user, "redeem_points", 0)  # Safe fallback
-        redeemed_points = (
-            UserRedeem.objects.filter(user=user)
-            .aggregate(total=Sum("points_used"))
-            .get("total")
-            or 0
+        user_points = getattr(user, "redeem_points", 0)  # Safe fallback
+
+        # Find next affordable offer
+        affordable_offers = (
+            Redeem.objects.filter(redeem_points__gt=user_points)
+            .select_related("sub_category__category")
+            .order_by("redeem_points")
         )
-        available_points = total_points - redeemed_points
+
+        next_offer = affordable_offers.first() if affordable_offers.exists() else None
 
         return {
-            "total_points": total_points,
-            "redeemed_points": redeemed_points,
-            "available_points": available_points,
+            "user_points": user_points,
+            "next_offer": next_offer,
         }

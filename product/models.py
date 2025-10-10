@@ -1,23 +1,32 @@
 from django.db import models
+
 from branch.models import Branch
+
+
 # Create your models here.
 class ProductCategory(models.Model):
     name = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
-    
+
+
 class SubCategory(models.Model):
     name = models.CharField(max_length=100)
     category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE)
-    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-
         return self.name
+
 
 class ProductSize(models.Model):
     name = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -27,23 +36,29 @@ class Product(models.Model):
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField()
-    image = models.FileField(upload_to='product_images',null=True,blank=True)
-    image_alt_description = models.CharField(max_length=100,null=True,blank=True)
-    size = models.ManyToManyField(ProductSize,blank=True)
+    image = models.FileField(upload_to="product_images", null=True, blank=True)
+    image_alt_description = models.CharField(max_length=100, null=True, blank=True)
+    size = models.ManyToManyField(ProductSize, blank=True)
     sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
     redeem_points = models.PositiveIntegerField(default=0)
-    branch= models.ForeignKey(Branch, on_delete=models.CASCADE, null=True, blank=True)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, null=True, blank=True)
     is_featured = models.BooleanField(default=False)
     featured_points = models.PositiveIntegerField(default=0)
-    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
 
+
 class ProductAddOns(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE,related_name='add_ons')
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="add_ons"
+    )
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
