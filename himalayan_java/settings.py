@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     "favorites",
     "branch",
     "account",
+    "channels",
+    "notifications",
 ]
 
 MIDDLEWARE = [
@@ -68,6 +70,17 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     )
+}
+
+ASGI_APPLICATION = "himalayan_java.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
 }
 
 ROOT_URLCONF = "himalayan_java.urls"

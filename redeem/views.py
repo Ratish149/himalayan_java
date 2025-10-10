@@ -11,13 +11,18 @@ from .serializers import (
 )
 
 
-class RedeemPointsView(generics.ListAPIView):
+class RedeemPointsView(generics.ListCreateAPIView):
     """
     Public endpoint: View available redeem offers.
     """
 
     queryset = Redeem.objects.select_related("sub_category__category").all()
     serializer_class = RedeemSerializer
+
+
+class RedeemPointsRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = RedeemSerializer
+    queryset = Redeem.objects.all()
 
 
 class UserRedeemView(generics.ListCreateAPIView):

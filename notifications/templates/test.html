@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Real-time Notifications</title>
+</head>
+<body>
+<h1>Notifications</h1>
+<ul id="notifications"></ul>
+
+<input type="text" id="msgInput" placeholder="Type a message" />
+<button id="sendBtn">Send Test</button>
+
+<script>
+const userId = 3; // Change as needed
+const socket = new WebSocket(`ws://127.0.0.1:8000/ws/notifications/${userId}/`);
+
+socket.onopen = () => console.log("WebSocket connected!");
+socket.onclose = () => console.log("WebSocket disconnected!");
+
+socket.onmessage = (e) => {
+    const data = JSON.parse(e.data);
+    const li = document.createElement("li");
+    li.textContent = data.message;
+    document.getElementById("notifications").appendChild(li);
+};
+
+// Optional: send message to Django shell via HTTP POST (or skip for shell testing)
+document.getElementById("sendBtn").onclick = () => {
+    alert("Use Django shell to send notifications, e.g. send_notification(2, 'Hello!')");
+};
+</script>
+</body>
+</html>
