@@ -12,7 +12,7 @@
 
 <script>
 const userId = 3; // Change as needed
-const socket = new WebSocket(`ws://127.0.0.1:8000/ws/notifications/${userId}/`);
+const socket = new WebSocket(`ws://64.227.155.217:8000/ws/notifications/${userId}/`);
 
 socket.onopen = () => console.log("WebSocket connected!");
 socket.onclose = () => console.log("WebSocket disconnected!");
