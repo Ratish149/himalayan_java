@@ -29,6 +29,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
+FIREBASE_CREDENTIALS_PATH = os.path.join(BASE_DIR, "firebase_credential.json")
+
 
 # Application definition
 
@@ -117,14 +119,14 @@ WSGI_APPLICATION = "himalayan_java.wsgi.application"
 
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-""" DATABASES = {
+DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
-} """
+}
 
-DATABASES = {
+""" DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": "himalayan_java",
@@ -133,7 +135,7 @@ DATABASES = {
         "HOST": "localhost",
         "PORT": "",
     }
-}
+} """
 
 
 # Password validation
